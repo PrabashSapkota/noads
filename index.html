@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-black">
 <head>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ad-Free Player</title>
@@ -38,48 +39,15 @@
       z-index: 10;
       text-align: center;
     }
-
-    /* Viewer count overlay - minimal style */
-    .viewer-overlay {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 20;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #ef4444; /* red-500 */
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .red-dot {
-      width: 10px;
-      height: 10px;
-      background-color: #ef4444;
-      border-radius: 50%;
-    }
   </style>
 </head>
 <body>
   <div class="iframe-container">
     <iframe id="contentFrame" allowfullscreen></iframe>
-    
-    <!-- Live Viewer Count: red dot + red number only -->
-    <div class="viewer-overlay">
-      <div class="red-dot"></div>
-      <span id="count">0</span>
-    </div>
-    
     <div id="errorMessage" class="message-overlay bg-red-100 bg-opacity-90 text-red-700 p-4">
       Could not load content. The site may block embedding (X-Frame-Options) or there was a network issue.
     </div>
   </div>
-
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -93,29 +61,7 @@
       const url = getUrlParameter('url');
       const contentFrame = document.getElementById('contentFrame');
       const errorMessage = document.getElementById('errorMessage');
-      const viewerCountElement = document.getElementById('count');
 
-      // Extract ID: last 10 characters of the ?url= value
-      let id = 'default'; // fallback
-      if (url && url.length >= 10) {
-        id = url.slice(-10);
-      } else if (url) {
-        id = url; // use full if shorter than 10
-      }
-
-      // Initialize socket with stream ID
-      const socket = io('wss://wss.timstreams.site', {
-        query: { id }
-      });
-
-      // Listen for viewer count updates
-      socket.on('updateViewCount', (data) => {
-        if (data.id === id) {
-          viewerCountElement.textContent = data.viewCount;
-        }
-      });
-
-      // Existing iframe loading logic
       if (url) {
         contentFrame.src = url;
 
