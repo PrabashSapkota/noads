@@ -39,16 +39,28 @@
       text-align: center;
     }
 
-    /* Viewer count overlay */
+    /* Viewer count overlay - minimal style */
     .viewer-overlay {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 12px;
+      left: 12px;
       z-index: 20;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 8px 12px;
-      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 6px 10px;
+      border-radius: 6px;
       font-size: 14px;
+      font-weight: bold;
+      color: #ef4444; /* red-500 */
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .red-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #ef4444;
+      border-radius: 50%;
     }
   </style>
 </head>
@@ -56,9 +68,10 @@
   <div class="iframe-container">
     <iframe id="contentFrame" allowfullscreen></iframe>
     
-    <!-- Live Viewer Count -->
-    <div class="viewer-overlay text-green-500 font-bold">
-      <span>👁️ </span><span id="count">0</span> Viewers
+    <!-- Live Viewer Count: red dot + red number only -->
+    <div class="viewer-overlay">
+      <div class="red-dot"></div>
+      <span id="count">0</span>
     </div>
     
     <div id="errorMessage" class="message-overlay bg-red-100 bg-opacity-90 text-red-700 p-4">
@@ -82,12 +95,12 @@
       const errorMessage = document.getElementById('errorMessage');
       const viewerCountElement = document.getElementById('count');
 
-      // Extract ID: last 30 characters of the ?url= value
-      let id = 'default'; // fallback if no url or too short
-      if (url && url.length >= 23) {
-        id = url.slice(-23);
+      // Extract ID: last 10 characters of the ?url= value
+      let id = 'default'; // fallback
+      if (url && url.length >= 10) {
+        id = url.slice(-10);
       } else if (url) {
-        id = url; // use full if shorter
+        id = url; // use full if shorter than 10
       }
 
       // Initialize socket with stream ID
