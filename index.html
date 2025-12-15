@@ -1,8 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en" class="bg-black">
 <head>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ad-Free Player</title>
@@ -40,15 +38,35 @@
       z-index: 10;
       text-align: center;
     }
+
+    /* Viewer count overlay */
+    .viewer-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 20;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div class="iframe-container">
     <iframe id="contentFrame" allowfullscreen></iframe>
+    
+    <!-- Live Viewer Count -->
+    <div class="viewer-overlay text-green-500 font-bold">
+      <span>👁️ </span><span id="count">0</span> Viewers
+    </div>
+    
     <div id="errorMessage" class="message-overlay bg-red-100 bg-opacity-90 text-red-700 p-4">
       Could not load content. The site may block embedding (X-Frame-Options) or there was a network issue.
     </div>
   </div>
+
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -62,7 +80,29 @@
       const url = getUrlParameter('url');
       const contentFrame = document.getElementById('contentFrame');
       const errorMessage = document.getElementById('errorMessage');
+      const viewerCountElement = document.getElementById('count');
 
+      // Extract ID: last 30 characters of the ?url= value
+      let id = 'default'; // fallback if no url or too short
+      if (url && url.length >= 30) {
+        id = url.slice(-30);
+      } else if (url) {
+        id = url; // use full if shorter
+      }
+
+      // Initialize socket with stream ID
+      const socket = io('wss://wss.timstreams.site', {
+        query: { id }
+      });
+
+      // Listen for viewer count updates
+      socket.on('updateViewCount', (data) => {
+        if (data.id === id) {
+          viewerCountElement.textContent = data.viewCount;
+        }
+      });
+
+      // Existing iframe loading logic
       if (url) {
         contentFrame.src = url;
 
