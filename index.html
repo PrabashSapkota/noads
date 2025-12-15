@@ -35,9 +35,6 @@
       z-index: 1000 !important;
       touch-action: manipulation;
     }
-    iframe:not(#player iframe) {
-      z-index: 5 !important;
-    }
     .iframe-container {
       position: relative;
       width: 100%;
@@ -58,7 +55,7 @@
       top: 20px;
       right: 20px;
       background-color: rgba(0, 0, 0, 0.6);
-      color: #00ff00; /* Green text color */
+      color: #00ff00;
       padding: 10px 15px;
       border-radius: 8px;
       font-size: 18px;
@@ -136,6 +133,7 @@
           return;
         }
 
+        // HLS or DASH stream → use JW Player
         if (src.includes(".m3u8") || src.includes(".mpd")) {
           jwplayer.key = 'XSuP4qMl+9tK17QNb+4+th2Pm9AWgMO/cYH8CI0HGGr7bdjo';
           const isDASH = src.includes(".mpd");
@@ -171,18 +169,21 @@
           window.addEventListener("resize", resizePlayer);
           resizePlayer();
         } else {
+          // Any other link (iframe embed) → use plain iframe without sandbox
           const container = document.createElement("div");
           container.className = "iframe-container";
+
           const iframe = document.createElement("iframe");
           iframe.src = src;
           iframe.allow = "autoplay; fullscreen; picture-in-picture";
-          // sandbox attribute has been removed as requested
-          iframe.style.cssText = "width:100%;height:100vh;";
+          // No sandbox attribute at all
+          iframe.style.cssText = "width:100%;height:100vh;border:none;";
           iframe.loading = "lazy";
+
           container.appendChild(iframe);
-          document.body.innerHTML = "";
+          document.body.innerHTML = ""; // Clear body
           document.body.appendChild(container);
-          document.body.appendChild(document.getElementById('viewer-count')); // Re-append overlay on top
+          document.body.appendChild(document.getElementById('viewer-count')); // Keep viewer count on top
         }
       };
 
