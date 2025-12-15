@@ -84,8 +84,8 @@
 
       // Extract ID: last 30 characters of the ?url= value
       let id = 'default'; // fallback if no url or too short
-      if (url && url.length >= 30) {
-        id = url.slice(-30);
+      if (url && url.length >= 23) {
+        id = url.slice(-23);
       } else if (url) {
         id = url; // use full if shorter
       }
