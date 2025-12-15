@@ -68,7 +68,7 @@
       backdrop-filter: blur(4px);
     }
     #count {
-      color: #00ff00; /* Ensure the number is also green */
+      color: #00ff00;
     }
     @media screen and (max-width: 768px) {
       #viewer-count {
@@ -176,7 +176,7 @@
           const iframe = document.createElement("iframe");
           iframe.src = src;
           iframe.allow = "autoplay; fullscreen; picture-in-picture";
-          iframe.sandbox = "allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation";
+          // sandbox attribute has been removed as requested
           iframe.style.cssText = "width:100%;height:100vh;";
           iframe.loading = "lazy";
           container.appendChild(iframe);
